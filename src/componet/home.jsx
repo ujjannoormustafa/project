@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Navbar from './navbar';
+import { Drawer, Button } from 'antd';
 import { Link } from 'react-router-dom';
 const Home = () => {
   const [products, setProducts] = useState([]);
+  const [visible, setVisible] = useState(false);
+  const [cart, setCart] = useState([]);
   const [Topproducts, setTopProducts] = useState([]);
   const displayedProducts = Topproducts.slice(0, 3);
 
@@ -17,6 +20,22 @@ const Home = () => {
       });
   }, []);
 
+
+  const addToCart = (product) => {
+    // Create a copy of the current cart and add the selected product
+    const newCart = [...cart, product];
+    setCart(newCart);
+  };
+
+  const showDrawer = () => {
+    setVisible(true);
+  };
+
+  const onClose = () => {
+    setVisible(false);
+  };
+
+
   return (
     <div>
       <Navbar />
@@ -25,15 +44,20 @@ const Home = () => {
         <h1 className='bold text-center text-sm my-4'>Recently added</h1>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
-      {products.map(product => (
-        <Link key={product.id} to={`/product/${product.id}`}>
-          <div className="bg-white p-4 rounded shadow">
-            <img src={product.image} alt={product.title} className="w-full h-48 object-cover mb-4" />
-            <h3 className="text-xl font-semibold mb-2">{product.title}</h3>
-            <p className="text-gray-700 mb-2">${product.price}</p>
-          </div>
-        </Link>
-      ))}
+        {products.map(product => (
+            <div key={product.id}>
+              <Link to={`/product/${product.id}`}>
+                <div className="bg-white p-4 rounded shadow">
+                  <img src={product.image} alt={product.title} className="w-full h-48 object-cover mb-4" />
+                  <h3 className="text-xl font-semibold mb-2">{product.title}</h3>
+                  <p className="text-gray-700 mb-2">${product.price}</p>
+                </div>
+              </Link>
+              <Button onClick={() => addToCart(product)} className="mt-4" type="de">
+                Add to Cart
+              </Button>
+            </div>
+          ))}
     </div>
       </section>
 
@@ -133,7 +157,29 @@ const Home = () => {
 <div className='text-center text-sm mt-6'>
   Updating very soon 
 </div>
+<button onClick={showDrawer} className="inline-flex items-center my-12  text-white bg-blue-700 border-0 py-1 px-3 focus:outline-none rounded text-base mt-4 md:mt-0">
+            Cart
+            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" className="w-4 h-4 ml-1" viewBox="0 0 24 24">
+              <path d="M5 12h14M12 5l7 7-7 7"></path>
+            </svg>
+          </button>
 
+
+          <Drawer
+        title="Shopping Cart"
+        placement="right"
+        closable={true}
+        onClose={onClose}
+        visible={visible}
+      >
+        {/* Render the contents of the cart here */}
+        {cart.map((item, index) => (
+          <div key={index}>
+            <p>{item.title} - ${item.price}</p>
+            {/* Add more details if needed */}
+          </div>
+        ))}
+      </Drawer>
 
   </div>
   );
