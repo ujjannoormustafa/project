@@ -18,7 +18,7 @@ const Productdeatils = () => {
   }, [id]);
 
   if (!product) {
-    return <div>Loading...</div>;
+    return <div className='text-center'> Product Loading...</div>;
   }
 
   return (
